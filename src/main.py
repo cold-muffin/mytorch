@@ -3,6 +3,7 @@ matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import networkx as nx
 
+from models.observer import Observer
 from .train import *
 
 data = {
@@ -12,6 +13,26 @@ data = {
     'Book Sales': [4.7, 8.8, 15.1, 12.2, 10.6, 3.5, 9.7, 5.9, 20.8, 7.9]
 }
 
+G = nx.Graph()
+
+class Console(Observer):
+  def update(self, *args, **kwargs):
+    # print(kwargs["event"], kwargs["a"], kwargs["b"])
+    pass
+
+class Graph(Observer):
+  previous = None
+  def update(self, *args, **kwargs):
+    if "terminal_node" in kwargs:
+      # print(kwargs["terminal_node"])
+      pass
+    
+    if "event" in kwargs and kwargs["event"] == "graph":
+      G.add_node(kwargs["id"], color="dimgray", size=10)
+      if self.previous is not None:
+        G.add_edge(kwargs["id"], self.previous)
+      self.previous = kwargs["id"]
+
 # The following line will create a list of data points. It does this by:
 # (1) creating a list containing each of the lists in `data`
 # (2) unpacking the lists from (1) and passing them into `zip`
@@ -19,42 +40,37 @@ data = {
 # (4) using the elements output from `zip` to create a list
 data_set = list(zip(*[data[key] for key in data]))
 
+train = Train()
+
 if __name__ == "__main__":
-  model = create_model(4)
+  graph = Graph()
+  Number.observers = [graph]
+  Train.observers = [graph]
+  model = train.create_model(4)
   losses = []
-  for _ in range(1000):
-      losses.append(train_epoch(model, data_set, l2_loss))
+
+  for _ in range(10):
+      G.clear()
+      losses.append(train.train_epoch(model, data_set, train.l2_loss))
+      pass
 
   fig, ax = plt.subplots(figsize=(8,4))
 
-  ax.plot(losses)
-  ax.set_yscale('log')
-  ax.set_ylabel('Loss')
-  ax.set_xlabel('Training Step');
-  ax.grid(True)
+  # ax.plot(losses)
+  # ax.set_yscale('log')
+  # ax.set_ylabel('Loss')
+  # ax.set_xlabel('Training Step');
+  # ax.grid(True)
 
-  # G = nx.Graph()
+  node_colors = [G.nodes[n]["color"] for n in G.nodes]
+  node_sizes = [G.nodes[n]["size"] for n in G.nodes]
 
-  # G.add_node("A", color="dimgray", size=300)
-  # G.add_node("B", color="dimgray", size=300)
-  # G.add_node("C", color="dimgray", size=300)
-
-  # G.add_edge("A", "B")
-  # G.add_edge("B", "C")
-
-  # G.nodes["B"]["color"] = "red" 
-  # G.nodes["B"]["size"] = 700
-
-  # node_colors = [G.nodes[n]["color"] for n in G.nodes]
-  # node_sizes = [G.nodes[n]["size"] for n in G.nodes]
-
-  # nx.draw(
-  #     G, 
-  #     with_labels=True, 
-  #     node_color=node_colors, 
-  #     node_size=node_sizes,
-  #     font_color="white",
-  #     font_weight="bold"
-  # )
+  nx.draw(
+      G, 
+      node_color=node_colors,
+      node_size=node_sizes,
+      font_color="white",
+      font_weight="bold"
+  )
 
   plt.show()

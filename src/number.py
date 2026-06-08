@@ -3,12 +3,14 @@ from __future__ import annotations
 import numpy as np
 from typing import Optional, TYPE_CHECKING
 
+from models.observable import Observable
 from .operations import Operation, Add, Subtract, Multiply, Divide, Power
 
 if TYPE_CHECKING:
   from .datatypes import Scalar
 
-class Number:
+class Number(Observable):
+    observers = []
     def __repr__(self):
         return "Number({})".format(self.data)
 
@@ -35,8 +37,7 @@ class Number:
         """ Number.creator is a read-only property """
         return self._creator
     
-    @staticmethod
-    def _op(Op, a, b):
+    def _op(self, Op, a, b):
         """_op "wraps" (i.e. mediates) all of the operations performed between `Number` instances.
            
            Parameters
@@ -60,42 +61,44 @@ class Number:
         
         """ Initialize Op, using `f` as its reference"""
         f = Op()
+
+        self.update(event=Op, a=a, b=b)
         
         """ Get the output of the operation's forward pass, which is an int or float.
             Make it ans instance of `Number`, whose creator is f. Return this result."""
         return Number(f(a, b), creator=f)
 
-    def __add__(self, other):
+    def __add__(self, other) -> Number:
         return self._op(Add, self, other)
 
-    def __radd__(self, other):
+    def __radd__(self, other) -> Number:
         return self._op(Add, other, self)
 
-    def __mul__(self, other):
+    def __mul__(self, other) -> Number:
         return self._op(Multiply, self, other)
 
-    def __rmul__(self, other):
+    def __rmul__(self, other) -> Number:
         return self._op(Multiply, other, self)
 
-    def __truediv__(self, other):
+    def __truediv__(self, other) -> Number:
         return self._op(Divide, self, other)
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(self, other) -> Number:
         return self._op(Divide, other, self)
 
-    def __sub__(self, other):
+    def __sub__(self, other) -> Number:
         return self._op(Subtract, self, other)
 
-    def __rsub__(self, other):
+    def __rsub__(self, other) -> Number:
         return self._op(Subtract, other, self)
 
-    def __pow__(self, other):
+    def __pow__(self, other) -> Number:
         return self._op(Power, self, other)
 
-    def __rpow__(self, other):
+    def __rpow__(self, other) -> Number:
         return self._op(Power, other, self)
 
-    def __neg__(self):
+    def __neg__(self) -> Number:
         return -1*self
     
     def __eq__(self, value):
@@ -104,6 +107,7 @@ class Number:
         return self.data == value
 
     def backprop(self, grad=1):
+        self.update(event="graph", id=self.__repr__())
         if self.grad is None:
             self.grad = grad
         else:
@@ -116,3 +120,7 @@ class Number:
         self.grad = None
         if self._creator is not None:
             self._creator.null_gradients()
+
+    def update(self, *args, **kwargs):
+      for observer in self.observers:
+        observer.update(*args, **kwargs)
