@@ -21,17 +21,22 @@ class Console(Observer):
     pass
 
 class Graph(Observer):
-  previous = None
+  layers: dict[int, list[Node]] = {}
   def update(self, *args, **kwargs):
-    if "terminal_node" in kwargs:
-      # print(kwargs["terminal_node"])
-      pass
-    
     if "event" in kwargs and kwargs["event"] == "graph":
-      G.add_node(kwargs["id"], color="dimgray", size=10)
-      if self.previous is not None:
-        G.add_edge(kwargs["id"], self.previous)
-      self.previous = kwargs["id"]
+
+      if kwargs["layer"] not in self.layers:
+        self.layers[kwargs["layer"]] = [kwargs["this"]]
+      else:
+        self.layers[kwargs["layer"]].append(kwargs["this"])
+
+      G.add_node(
+        kwargs["this"].id, 
+        color="cyan", size=10,
+        pos=(kwargs["layer"], len(self.layers[kwargs["layer"]]))
+      )
+      if kwargs["prev"] is not None:
+        G.add_edge(kwargs["prev"].id, kwargs["this"].id)
 
 # The following line will create a list of data points. It does this by:
 # (1) creating a list containing each of the lists in `data`
@@ -46,6 +51,7 @@ if __name__ == "__main__":
   graph = Graph()
   Number.observers = [graph]
   Train.observers = [graph]
+  Operation.observers = [graph]
   model = train.create_model(4)
   losses = []
 
@@ -61,16 +67,20 @@ if __name__ == "__main__":
   # ax.set_ylabel('Loss')
   # ax.set_xlabel('Training Step');
   # ax.grid(True)
-
   node_colors = [G.nodes[n]["color"] for n in G.nodes]
   node_sizes = [G.nodes[n]["size"] for n in G.nodes]
+  pos = {}
+  for node in G.nodes:
+      pos[node] = G.nodes[node]["pos"]
 
   nx.draw(
       G, 
+      pos=pos,
       node_color=node_colors,
       node_size=node_sizes,
-      font_color="white",
-      font_weight="bold"
+      font_color="black",
+      font_weight="bold",
+      edge_color="gray"
   )
 
   plt.show()

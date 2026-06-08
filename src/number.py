@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import numpy as np
 from typing import Optional, TYPE_CHECKING
+import uuid
 
 from models.observable import Observable
+from models.node import Node
 from .operations import Operation, Add, Subtract, Multiply, Divide, Power
 
 if TYPE_CHECKING:
@@ -107,7 +109,6 @@ class Number(Observable):
         return self.data == value
 
     def backprop(self, grad=1):
-        self.update(event="graph", id=self.__repr__())
         if self.grad is None:
             self.grad = grad
         else:
@@ -120,6 +121,12 @@ class Number(Observable):
         self.grad = None
         if self._creator is not None:
             self._creator.null_gradients()
+
+    def display(self, depth: int=0, previous: Optional[Node] = None):
+      node = Node(str(uuid.uuid4()), disp=str(self.data))
+      self.update(event="graph", this=node, layer=depth, prev=previous)
+      if self.creator is not None:
+        self.creator.display(depth+1, previous=node)
 
     def update(self, *args, **kwargs):
       for observer in self.observers:

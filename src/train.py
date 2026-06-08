@@ -53,12 +53,12 @@ class Train(Observable):
         '''
         # compute the mean error over the dataset
         mean_loss = sum(loss_fn(sample, model) for sample in data_set) / len(data_set)
-        self.update(terminal_node=mean_loss)
         
         # compute gradients for our parameters
         assert isinstance(mean_loss, Number)
         mean_loss.null_gradients()
         mean_loss.backprop()
+        mean_loss.display()
         
         # update the model parameters using gradient descent
         for param in model:

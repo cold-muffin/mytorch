@@ -1,16 +1,21 @@
 from __future__ import annotations
 
 import math
-from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from abc import abstractmethod
+from typing import Optional, TYPE_CHECKING
+import uuid
+
+from models.observable import Observable
+from models.node import Node
 
 if TYPE_CHECKING:
   from .number import Number
   from .datatypes import Scalar
 
-class Operation(ABC):
+class Operation(Observable): # Observable inherits from ABC
     a: Number
     b: Number
+    observers = []
     """ All `Operations` represent two-variable mathematical functions, e.g. +,-,*,/,** 
         __call__ accepts two `Number` objects, and returns a Python-numeric result (int, float)
     """
@@ -47,6 +52,16 @@ class Operation(ABC):
             var = getattr(self, attr)
             if hasattr(var, 'null_gradients'):
                 var.null_gradients()
+
+    def display(self, depth: int=0, previous: Optional[Node] = None):
+      node = Node(str(uuid.uuid4()), disp=self.__repr__())
+      self.update(event="graph", this=node, layer=depth, prev=previous)
+      self.a.display(depth+1, previous=node)
+      self.b.display(depth+1, previous=node)
+
+    def update(self, *args, **kwargs):
+      for observer in self.observers:
+        observer.update(*args, **kwargs)
 
 
 class Add(Operation):
