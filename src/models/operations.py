@@ -9,8 +9,8 @@ from src.models.observable import Observable
 from src.models.node import Node
 
 if TYPE_CHECKING:
-  from src.number import Number
-  from src.datatypes import Scalar
+  from .number import Number
+  from src.models.datatypes import Scalar
 
 class Operation(Observable): # Observable inherits from ABC
     a: Number

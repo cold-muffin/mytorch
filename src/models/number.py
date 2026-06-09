@@ -6,10 +6,10 @@ import uuid
 
 from src.models.observable import Observable
 from src.models.node import Node
-from src.operations import Operation, Add, Subtract, Multiply, Divide, Power
+from .operations import Operation, Add, Subtract, Multiply, Divide, Power
 
 if TYPE_CHECKING:
-  from src.datatypes import Scalar
+  from src.models.datatypes import Scalar
 
 class Number(Observable):
     observers = []
