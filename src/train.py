@@ -1,9 +1,9 @@
 import numpy as np
 from typing import Sequence, Callable
 
-from models.observable import Observable
-from .number import Number
-from .operations import *
+from src.models.observable import Observable
+from src.number import Number
+from src.operations import *
 
 class Train(Observable):
     @staticmethod

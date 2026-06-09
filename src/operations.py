@@ -5,12 +5,12 @@ from abc import abstractmethod
 from typing import Optional, TYPE_CHECKING
 import uuid
 
-from models.observable import Observable
-from models.node import Node
+from src.models.observable import Observable
+from src.models.node import Node
 
 if TYPE_CHECKING:
-  from .number import Number
-  from .datatypes import Scalar
+  from src.number import Number
+  from src.datatypes import Scalar
 
 class Operation(Observable): # Observable inherits from ABC
     a: Number

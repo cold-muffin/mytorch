@@ -4,12 +4,12 @@ import numpy as np
 from typing import Optional, TYPE_CHECKING
 import uuid
 
-from models.observable import Observable
-from models.node import Node
-from .operations import Operation, Add, Subtract, Multiply, Divide, Power
+from src.models.observable import Observable
+from src.models.node import Node
+from src.operations import Operation, Add, Subtract, Multiply, Divide, Power
 
 if TYPE_CHECKING:
-  from .datatypes import Scalar
+  from src.datatypes import Scalar
 
 class Number(Observable):
     observers = []
@@ -123,7 +123,7 @@ class Number(Observable):
             self._creator.null_gradients()
 
     def display(self, depth: int=0, previous: Optional[Node] = None):
-      node = Node(str(uuid.uuid4()), disp=str(self.data))
+      node = Node(str(uuid.uuid4()), disp=str(round(self.data, 2)))
       self.update(event="graph", this=node, layer=depth, prev=previous)
       if self.creator is not None:
         self.creator.display(depth+1, previous=node)
