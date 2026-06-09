@@ -30,9 +30,12 @@ class Graph(Observer):
       else:
         self.layers[kwargs["layer"]].append(kwargs["this"])
 
+      print([len(self.layers[layer]) for layer in self.layers])
+      print((kwargs["layer"], len(self.layers[kwargs["layer"]])))
       G.add_node(
         kwargs["this"].id, 
         color="cyan", size=10,
+        layer=kwargs["layer"],
         pos=(kwargs["layer"], len(self.layers[kwargs["layer"]]))
       )
       if kwargs["prev"] is not None:
@@ -57,6 +60,7 @@ if __name__ == "__main__":
 
   for _ in range(10):
       G.clear()
+      graph.layers = {}
       losses.append(train.train_epoch(model, data_set, train.l2_loss))
       pass
 
@@ -67,11 +71,15 @@ if __name__ == "__main__":
   # ax.set_ylabel('Loss')
   # ax.set_xlabel('Training Step');
   # ax.grid(True)
+  
+  avgs = [len(graph.layers[layer]) for layer in graph.layers]
   node_colors = [G.nodes[n]["color"] for n in G.nodes]
   node_sizes = [G.nodes[n]["size"] for n in G.nodes]
   pos = {}
   for node in G.nodes:
-      pos[node] = G.nodes[node]["pos"]
+    p = G.nodes[node]["pos"]
+    layer = G.nodes[node]["layer"]
+    pos[node] = (p[0], p[1]-avgs[layer]/2)
 
   nx.draw(
       G, 
