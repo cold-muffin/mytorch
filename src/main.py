@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use("TkAgg")
+matplotlib.use("MacOSX")
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -32,7 +32,8 @@ class Graph(Observer):
 
       G.add_node(
         this.id,
-        color="cyan", size=80,
+        color="cyan", 
+        size=40,
         layer=layer,
         pos=(layer, len(self.layers[layer])),
         disp=this.disp
@@ -61,7 +62,7 @@ class Graph(Observer):
         font_weight="bold",
         edge_color="gray",
         labels=self.labels,
-        font_size=6
+        font_size=5
     )
   
   def show(self):
@@ -88,10 +89,9 @@ if __name__ == "__main__":
     G.clear()
     graph.layers = {}
     losses.append(train.train_epoch(model, data_set, train.l2_loss))
-    print(_)
     pass
 
-  fig, ax = plt.subplots(figsize=(8,4))
+  fig, ax = plt.subplots(figsize=(12,6))
 
   # ax.plot(losses)
   # ax.set_yscale('log')
