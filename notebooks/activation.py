@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from abc import ABC, abstractmethod
 
@@ -12,3 +13,9 @@ class Activation(ABC):
 class ReLU(Activation):
   def forward(self, inputs):
     return np.maximum(0, inputs)
+
+class SoftMax(Activation):
+  def forward(self, inputs):
+    expo = np.exp(inputs - np.max(inputs))
+    norm = expo / np.sum(expo, axis=1, keepdims=True)
+    return norm
