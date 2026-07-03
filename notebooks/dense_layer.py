@@ -1,7 +1,7 @@
 import numpy as np
 
 class DenseLayer:
-  def __init__(self, num_neurons: int, num_features: int):
+  def __init__(self, num_features: int, num_neurons: int):
     self._num_neurons = num_neurons
     self._num_features = num_features
 

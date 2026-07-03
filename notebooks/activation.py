@@ -16,6 +16,6 @@ class ReLU(Activation):
 
 class SoftMax(Activation):
   def forward(self, inputs):
-    expo = np.exp(inputs - np.max(inputs))
+    expo = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
     norm = expo / np.sum(expo, axis=1, keepdims=True)
     return norm
