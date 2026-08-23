@@ -11,6 +11,9 @@ class Activation(ABC):
     ...
 
 class ReLU(Activation):
+  def __repr__(self):
+    return "ReLU"
+
   def forward(self, inp):
     """
     Performs the Rectified Linear Unit function on some outputs.
@@ -24,7 +27,7 @@ class ReLU(Activation):
     self.inp = inp
     return np.maximum(inp, 0)
 
-  def backward(self, inc):
+  def backward(self, inc, learn_rate: float = -1):
     """
     Returns the derivative of the Rectified Linear Unit function.
 

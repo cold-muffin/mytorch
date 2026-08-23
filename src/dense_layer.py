@@ -15,6 +15,9 @@ class DenseLayer:
     self._random_weights()
     self._random_biases()
 
+  def __repr__(self):
+    return f"DenseLayer: {self.features} => {self.neurons}"
+
   def _random_weights(self) -> None:
     # w_11, w_12, ...
     # w_21, w_22, ...
