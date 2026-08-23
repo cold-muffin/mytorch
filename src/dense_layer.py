@@ -26,7 +26,7 @@ class DenseLayer:
     self.biases = np.random.rand(1, self.neurons)
     self.biases *= np.random.choice([-1, 1], size=(1, self.neurons))
 
-  def forward(self, inp: np.ndarray) -> np.ndarray:
+  def forward(self, inp: np.ndarray):
     """
     Performs one forward pass on the layer given some input.
 
@@ -41,5 +41,25 @@ class DenseLayer:
     # (samples, neurons) + (1, neurons) = (samples, neurons)
     return inp @ self.weights + self.biases
   
-  def backward(self, inp: np.ndarray) -> np.ndarray:
-    ...
+  def backward(self, inc: np.ndarray, learn_rate: float = 0.001) -> np.ndarray:
+    """
+    Backpropogates on the entire dense layer given some incoming gradient.
+
+    Args:
+      inc (ndarray): An ndarray of shape (samples, neurons) representing the incoming gradient.
+    
+    Returns:
+      ndarray: An ndarray of shape (samples, features) representing the outgoing gradient.
+    """
+    # (incoming gradient) @ (transposed weights) = (outgoing gradient)
+    # (samples, neurons)  @ (neurons, features)  = (samples, features)
+    outg = inc @ self.weights.T
+
+    # (inputs)            @ (incoming gradient) = (weights gradient)
+    # (features, samples) @ (samples, neurons)  = (features, neurons)
+    dw = self.inp.T @ inc
+    self.weights -= dw * learn_rate
+
+    self.biases -= np.sum(inc, axis=0) * learn_rate
+
+    return outg
