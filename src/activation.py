@@ -33,8 +33,37 @@ class ReLU(Activation):
 
     Args:
       inc (ndarray): An ndarray of any shape representing the incoming gradient.
+      learn_rate (float): The learning rate.
     
     Returns:
       (ndarray): An ndarray of any shape representing the outgoing gradient.
     """
     return np.where(self.inp > 0, inc, 0)
+
+class Sigmoid(Activation):
+  def forward(self, inp):
+    """
+    Performs the Sigmoid activation function.
+
+    Args:
+      inc (ndarray): An ndarray of any shape representing the incoming gradient.
+    
+    Returns:
+      (ndarray): An ndarray of any shape representing the outgoing gradient.
+    """
+    self.inp = inp
+    self.out = 1/(1+np.exp(-inp))
+    return self.out
+
+  def backward(self, inc, learn_rate: float = -1):
+    """
+    Returns the derivative of the Sigmoid function.
+
+    Args:
+      inc (ndarray): An ndarray of any shape representing the incoming gradient.
+      learn_rate (float): The learning rate.
+    
+    Returns:
+      (ndarray): An ndarray of any shape representing the outgoing gradient.
+    """
+    return inc * self.out * (1 - self.out)
