@@ -106,6 +106,7 @@ class DropoutLayer(Layer):
   def __init__(self, features: int, neurons: int, keep: float):
     super().__init__(features, neurons)
     self.keep = keep
+    self.training = True
     self._random_weights()
     self._random_biases()
   
@@ -121,8 +122,9 @@ class DropoutLayer(Layer):
     """
     self.inp = inp
     outp = (inp @ self.weights + self.biases)
-    self.drop = np.random.binomial(1, self.keep, size=outp.shape) / self.keep
-    outp *= self.drop
+    if self.training:
+      self.drop = np.random.binomial(1, self.keep, size=outp.shape) / self.keep
+      outp *= self.drop
     return outp
 
   def backward(self, inc, learn_rate = 0.001):

@@ -14,8 +14,8 @@ class Network:
   ):
     network = []
     for i in range(len(neurons)-1):
-      keep = 1 if neurons[i] < 6 else .7
-      network.append(DropoutLayer(neurons[i], neurons[i+1], keep))
+      keep = 1 if neurons[i] < 6 else .9
+      network.append(DenseLayer(neurons[i], neurons[i+1]))
       if i != len(neurons) - 2:
         network.append(activation())
 
@@ -34,6 +34,20 @@ class Network:
     """
     for layer in self.network:
       x = layer.forward(x)
+    return x
+
+  def predict(self, x: np.ndarray) -> np.ndarray:
+    for layer in self.network:
+      if hasattr(layer, 'training'):
+        layer.training = False
+
+    for layer in self.network:
+      x = layer.forward(x)
+
+    for layer in self.network:
+      if hasattr(layer, 'training'):
+        layer.training = True
+
     return x
   
   def cost(self, y: np.ndarray, y_pred: np.ndarray) -> float:
